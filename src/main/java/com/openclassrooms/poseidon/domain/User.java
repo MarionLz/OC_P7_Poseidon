@@ -1,6 +1,7 @@
 package com.openclassrooms.poseidon.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
@@ -17,6 +18,10 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is mandatory")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-\\[\\]{};':\"\\\\|,.<>/?]).{8,}$",
+            message = "Password must be at least 8 characters long and include at least one uppercase letter, one digit, and one special character"
+    )
     private String password;
 
     @NotBlank(message = "FullName is mandatory")
