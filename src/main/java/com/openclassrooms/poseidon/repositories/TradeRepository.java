@@ -1,6 +1,6 @@
 package com.openclassrooms.poseidon.repositories;
 
-import com.nnk.springboot.domain.Trade;
+import com.openclassrooms.poseidon.domain.Trade;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

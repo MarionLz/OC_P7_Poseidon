@@ -1,6 +1,6 @@
 package com.openclassrooms.poseidon.repositories;
 
-import com.nnk.springboot.domain.BidList;
+import com.openclassrooms.poseidon.domain.BidList;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

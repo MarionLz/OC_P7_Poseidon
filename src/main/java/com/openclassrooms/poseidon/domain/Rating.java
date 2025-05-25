@@ -1,11 +1,19 @@
 package com.openclassrooms.poseidon.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "rating")
 public class Rating {
-    // TODO: Map columns in data table RATING with corresponding java fields
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    Integer id;
+
+    String moodysRating;
+    String sandPRating;
+    String fitchRating;
+    Integer orderNumber;
 }
