@@ -16,6 +16,10 @@ public class RuleName {
     String description;
     String json;
     String template;
+
+    @Column(name = "sqlStr")
     String sqlStr;
+
+    @Column(name = "sqlPart")
     String sqlPart;
 }

@@ -1,7 +1,13 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.RuleName;
+import com.openclassrooms.poseidon.repositories.RuleNameRepository;
+import com.openclassrooms.poseidon.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,17 +18,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class RuleNameController {
-    // TODO: Inject RuleName service
+
+    private static final Logger logger = LogManager.getLogger("RuleNameController");
+
+    @Autowired
+    private RuleNameRepository ruleNameRepository;
 
     @RequestMapping("/ruleName/list")
-    public String home(Model model)
-    {
-        // TODO: find all RuleName, add to model
+    public String home(Model model, HttpServletRequest request) {
+
+        logger.info("Fetching all rules");
+        model.addAttribute("ruleNames", ruleNameRepository.findAll());
+        model.addAttribute("httpServletRequest", request);
         return "ruleName/list";
     }
 
     @GetMapping("/ruleName/add")
     public String addRuleForm(RuleName bid) {
+
         return "ruleName/add";
     }
 
