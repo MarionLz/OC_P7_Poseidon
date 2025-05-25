@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
     @NotBlank(message = "Username is mandatory")
