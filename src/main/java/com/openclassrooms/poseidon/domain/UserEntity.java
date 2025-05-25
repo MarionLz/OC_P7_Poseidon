@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -29,5 +29,4 @@ public class User {
 
     @NotBlank(message = "Role is mandatory")
     private String role;
-
 }
