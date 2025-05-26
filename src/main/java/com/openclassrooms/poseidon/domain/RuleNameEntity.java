@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "rulename")
-public class RuleName {
+public class RuleNameEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -16,6 +16,10 @@ public class RuleName {
     String description;
     String json;
     String template;
+
+    @Column(name = "sqlStr")
     String sqlStr;
+
+    @Column(name = "sqlPart")
     String sqlPart;
 }
