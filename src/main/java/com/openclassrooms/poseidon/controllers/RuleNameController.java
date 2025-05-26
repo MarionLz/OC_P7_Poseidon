@@ -1,8 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
-import com.openclassrooms.poseidon.domain.RuleName;
+import com.openclassrooms.poseidon.domain.RuleNameEntity;
 import com.openclassrooms.poseidon.repositories.RuleNameRepository;
-import com.openclassrooms.poseidon.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -11,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RuleNameController {
@@ -34,33 +30,58 @@ public class RuleNameController {
     }
 
     @GetMapping("/ruleName/add")
-    public String addRuleForm(RuleName bid) {
+    public String addRuleForm(Model model) {
 
+        logger.info("Displaying RuleName creation form");
+        model.addAttribute("ruleName", new RuleNameEntity());
         return "ruleName/add";
     }
 
     @PostMapping("/ruleName/validate")
-    public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
-        // TODO: check data valid and save to db, after saving return RuleName list
+    public String validate(@Valid @ModelAttribute("ruleName") RuleNameEntity ruleName, BindingResult result, Model model) {
+
+        logger.info("Validating new RuleName: {}", ruleName.getName());
+        if (!result.hasErrors()) {
+            ruleNameRepository.save(ruleName);
+            logger.info("RuleName created successfully: {}", ruleName.getName());
+            model.addAttribute("ruleNames", ruleNameRepository.findAll());
+            return "redirect:/ruleName/list";
+        }
         return "ruleName/add";
     }
 
     @GetMapping("/ruleName/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get RuleName by Id and to model then show to the form
+
+        logger.info("Fetching ruleName for update with ID: {}", id);
+        RuleNameEntity ruleName = ruleNameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ruleName Id:" + id));
+        model.addAttribute("ruleName", ruleName);
         return "ruleName/update";
     }
 
     @PostMapping("/ruleName/update/{id}")
-    public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName,
+    public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleNameEntity ruleName,
                              BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update RuleName and return RuleName list
+
+        logger.info("Updating ruleName with ID: {}", id);
+        if (result.hasErrors()) {
+            logger.warn("Validation errors while updating ruleName: {}", result.getAllErrors());
+            return "ruleName/update";
+        }
+        ruleNameRepository.save(ruleName);
+        logger.info("RuleName updated successfully: {}", ruleName.getName());
+        model.addAttribute("ruleNames", ruleNameRepository.findAll());
         return "redirect:/ruleName/list";
     }
 
     @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find RuleName by Id and delete the RuleName, return to Rule list
+
+        logger.info("Deleting ruleName with ID: {}", id);
+        RuleNameEntity ruleName = ruleNameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ruleName Id:" + id));
+        ruleNameRepository.delete(ruleName);
+        logger.info("RuleName deleted successfully: {}", ruleName.getName());
+        model.addAttribute("ruleNames", ruleNameRepository.findAll());
         return "redirect:/ruleName/list";
     }
 }
