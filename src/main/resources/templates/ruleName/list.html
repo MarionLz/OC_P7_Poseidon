@@ -24,6 +24,8 @@
 		</div>
 	</div>
 	<div class="row"><h2>Rule List</h2></div>
+	<div class="message success" th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></div>
+	<div class="message error" th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></div>
 	<div class="row">
 		<a href="/ruleName/add" class="btn btn-primary btn-sm">Add New</a>
 		<table class="table table-bordered">

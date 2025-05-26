@@ -49,7 +49,6 @@ public class RatingController {
             logger.info("POST /rating/validate - OK");
             return "redirect:/rating/list";
         }
-        model.addAttribute("errorMessage", "Validation errors found");
         logger.warn("POST /rating/validate - KO : validation errors found");
         return "rating/add";
     }
@@ -69,7 +68,6 @@ public class RatingController {
 
         if (result.hasErrors()) {
             logger.warn("POST /rating/update/{} - KO : validation errors found", id);        model.addAttribute("errorMessage", "Validation errors found");
-            model.addAttribute("errorMessage", "Validation errors found");
             return "rating/update";
         }
         ratingRepository.save(rating);
