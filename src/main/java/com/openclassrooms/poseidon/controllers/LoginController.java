@@ -21,26 +21,25 @@ public class LoginController {
     @GetMapping("login")
     public ModelAndView login() {
 
-        logger.info("Accessing login page");
         ModelAndView mav = new ModelAndView();
         mav.setViewName("login");
+        logger.info("GET /app/login - OK");
         return mav;
     }
 
     @GetMapping("secure/article-details")
     public ModelAndView getAllUserArticles() {
 
-        logger.info("Fetching all user articles");
         ModelAndView mav = new ModelAndView();
         mav.addObject("users", userRepository.findAll());
         mav.setViewName("user/list");
+        logger.info("GET /app/secure/article-details - OK");
         return mav;
     }
 
     @GetMapping("error")
     public ModelAndView error() {
 
-        logger.warn("Access denied or unauthorized access attempted");
         ModelAndView mav = new ModelAndView();
         String errorMessage= "You are not authorized for the requested data.";
         mav.addObject("errorMsg", errorMessage);
