@@ -1,9 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.BidListEntity;
-import com.openclassrooms.poseidon.domain.RuleNameEntity;
 import com.openclassrooms.poseidon.repositories.BidListRepository;
-import com.openclassrooms.poseidon.repositories.RuleNameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
