@@ -31,7 +31,7 @@ public class RuleNameController {
     }
 
     @GetMapping("/ruleName/add")
-    public String addRuleForm(Model model) {
+    public String addRuleNameForm(Model model) {
 
         model.addAttribute("ruleName", new RuleNameEntity());
         logger.info("GET /ruleName/add - OK");
