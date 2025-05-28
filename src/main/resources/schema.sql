@@ -1,6 +1,13 @@
 
+DROP TABLE IF EXISTS bidlist;
+DROP TABLE IF EXISTS trade;
+DROP TABLE IF EXISTS curvepoint;
+DROP TABLE IF EXISTS rating;
+DROP TABLE IF EXISTS rulename;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE BidList (
-  BidListId tinyint(4) NOT NULL AUTO_INCREMENT,
+  Id tinyint(4) NOT NULL AUTO_INCREMENT,
   account VARCHAR(30) NOT NULL,
   type VARCHAR(30) NOT NULL,
   bidQuantity DOUBLE,
@@ -23,11 +30,11 @@ CREATE TABLE BidList (
   sourceListId VARCHAR(125),
   side VARCHAR(125),
 
-  PRIMARY KEY (BidListId)
+  PRIMARY KEY (Id)
 );
 
 CREATE TABLE Trade (
-  TradeId tinyint(4) NOT NULL AUTO_INCREMENT,
+  Id tinyint(4) NOT NULL AUTO_INCREMENT,
   account VARCHAR(30) NOT NULL,
   type VARCHAR(30) NOT NULL,
   buyQuantity DOUBLE,
@@ -49,7 +56,7 @@ CREATE TABLE Trade (
   sourceListId VARCHAR(125),
   side VARCHAR(125),
 
-  PRIMARY KEY (TradeId)
+  PRIMARY KEY (Id)
 );
 
 CREATE TABLE CurvePoint (
