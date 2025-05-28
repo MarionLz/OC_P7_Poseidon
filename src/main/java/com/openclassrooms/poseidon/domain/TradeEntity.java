@@ -15,7 +15,7 @@ public class TradeEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    Integer tradeId;
+    Integer id;
 
     @NotBlank(message = "Account is mandatory")
     @Size(max = 30, message = "Account must be less than 30 characters")
