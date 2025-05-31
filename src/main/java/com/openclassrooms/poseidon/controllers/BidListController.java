@@ -1,7 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.BidListEntity;
-import com.openclassrooms.poseidon.repositories.BidListRepository;
+import com.openclassrooms.poseidon.services.BidListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +19,12 @@ public class BidListController {
     private static final Logger logger = LogManager.getLogger("BidListController");
 
     @Autowired
-    private BidListRepository bidListRepository;
+    private BidListService bidListService;
 
     @RequestMapping("/bidList/list")
     public String home(Model model, HttpServletRequest request)
     {
-        model.addAttribute("bidLists", bidListRepository.findAll());
+        model.addAttribute("bidLists", bidListService.findAllBids());
         model.addAttribute("httpServletRequest", request);
         logger.info("GET /bidList/list - OK");
         return "bidList/list";
@@ -39,13 +39,13 @@ public class BidListController {
     }
 
     @PostMapping("/bidList/validate")
-    public String validate(@Valid @ModelAttribute("bidList") BidListEntity bidList, BindingResult result, Model model,
+    public String validate(@Valid @ModelAttribute("bidList") BidListEntity bid, BindingResult result, Model model,
                            RedirectAttributes ra) {
 
         if (!result.hasErrors()) {
-            bidListRepository.save(bidList);
-            model.addAttribute("bidLists", bidListRepository.findAll());
-            ra.addFlashAttribute("successMessage", "Bid list created successfully");
+            bidListService.saveBid(bid);
+            model.addAttribute("bidLists", bidListService.findAllBids());
+            ra.addFlashAttribute("successMessage", "Bid created successfully");
             logger.info("POST /bidList/validate - OK");
             return "redirect:/bidList/list";
         }
@@ -54,25 +54,29 @@ public class BidListController {
     }
 
     @GetMapping("/bidList/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+    public String showUpdateForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        BidListEntity bidList = bidListRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Bid list Id:" + id));
-        model.addAttribute("bidList", bidList);
+        if (!bidListService.checkIfBidExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Bid not found");
+            logger.warn("GET /bidList/update/{} - KO : Bid not found", id);
+            return "redirect:/bidList/list";
+        }
+        model.addAttribute("bidList", bidListService.findBidById(id));
         logger.info("GET /bidList/update/{} - OK", id);
         return "bidList/update";
     }
 
     @PostMapping("/bidList/update/{id}")
-    public String updateBid(@PathVariable("id") Integer id, @Valid BidListEntity bidList,
+    public String updateBid(@PathVariable("id") Integer id, @Valid BidListEntity bid,
                              BindingResult result, Model model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
             logger.warn("POST /bidList/update/{} - KO : validation errors found", id);
             return "bidList/update";
         }
-        bidListRepository.save(bidList);
-        model.addAttribute("bidLists", bidListRepository.findAll());
-        ra.addFlashAttribute("successMessage", "Bid list updated successfully");
+        bidListService.saveBid(bid);
+        model.addAttribute("bidLists", bidListService.findAllBids());
+        ra.addFlashAttribute("successMessage", "Bid updated successfully");
         logger.info("POST /bidList/update/{} - OK", id);
         return "redirect:/bidList/list";
     }
@@ -80,10 +84,14 @@ public class BidListController {
     @GetMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        BidListEntity bidList = bidListRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Bid list Id:" + id));
-        bidListRepository.delete(bidList);
-        model.addAttribute("bidLists", bidListRepository.findAll());
-        ra.addFlashAttribute("successMessage", "Bid list deleted successfully");
+        if (!bidListService.checkIfBidExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Bid not found");
+            logger.warn("GET /bidList/delete/{} - KO : Bid not found", id);
+            return "redirect:/bidList/list";
+        }
+        bidListService.deleteBid(id);
+        model.addAttribute("bidLists", bidListService.findAllBids());
+        ra.addFlashAttribute("successMessage", "Bid deleted successfully");
         logger.info("GET /bidList/delete/{} - OK", id);
         return "redirect:/bidList/list";
     }

@@ -1,4 +1,4 @@
-package com.openclassrooms.poseidon.service;
+package com.openclassrooms.poseidon.services;
 
 import com.openclassrooms.poseidon.domain.UserEntity;
 import com.openclassrooms.poseidon.repositories.UserRepository;
