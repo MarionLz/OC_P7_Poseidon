@@ -1,46 +1,45 @@
-//package com.openclassrooms.poseidon;
-//
-//import com.nnk.springboot.domain.Trade;
-//import com.nnk.springboot.repositories.TradeRepository;
-//import org.junit.Assert;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.junit4.SpringRunner;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
-//public class TradeTests {
-//
-//	@Autowired
-//	private TradeRepository tradeRepository;
-//
-//	@Test
-//	public void tradeTest() {
-//		Trade trade = new Trade("Trade Account", "Type");
-//
-//		// Save
-//		trade = tradeRepository.save(trade);
-//		Assert.assertNotNull(trade.getTradeId());
-//		Assert.assertTrue(trade.getAccount().equals("Trade Account"));
-//
-//		// Update
-//		trade.setAccount("Trade Account Update");
-//		trade = tradeRepository.save(trade);
-//		Assert.assertTrue(trade.getAccount().equals("Trade Account Update"));
-//
-//		// Find
-//		List<Trade> listResult = tradeRepository.findAll();
-//		Assert.assertTrue(listResult.size() > 0);
-//
-//		// Delete
-//		Integer id = trade.getTradeId();
-//		tradeRepository.delete(trade);
-//		Optional<Trade> tradeList = tradeRepository.findById(id);
-//		Assert.assertFalse(tradeList.isPresent());
-//	}
-//}
+package com.openclassrooms.poseidon;
+
+import com.openclassrooms.poseidon.domain.TradeEntity;
+import com.openclassrooms.poseidon.repositories.TradeRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+public class TradeTests {
+
+	@Autowired
+	private TradeRepository tradeRepository;
+
+	@Test
+	public void tradeTest() {
+
+		TradeEntity trade = new TradeEntity("Trade Account", "Type", 100.0);
+
+		// Save
+		trade = tradeRepository.save(trade);
+		assertNotNull(trade.getId());
+        assertEquals("Trade Account", trade.getAccount());
+
+		// Update
+		trade.setAccount("Trade Account Update");
+		trade = tradeRepository.save(trade);
+        assertEquals("Trade Account Update", trade.getAccount());
+
+		// Find
+		List<TradeEntity> listResult = tradeRepository.findAll();
+        assertFalse(listResult.isEmpty());
+
+		// Delete
+		Integer id = trade.getId();
+		tradeRepository.delete(trade);
+		Optional<TradeEntity> tradeList = tradeRepository.findById(id);
+		assertFalse(tradeList.isPresent());
+	}
+}

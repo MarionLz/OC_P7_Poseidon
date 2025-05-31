@@ -2,14 +2,17 @@ package com.openclassrooms.poseidon.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "trade")
 public class TradeEntity {
 
@@ -25,6 +28,7 @@ public class TradeEntity {
     @Size(max = 30, message = "Type must be less than 30 characters")
     String type;
 
+    @NotNull(message = "Buy quantity is mandatory")
     @PositiveOrZero(message = "Buy quantity must be zero or positive")
     Double buyQuantity;
 
@@ -75,4 +79,17 @@ public class TradeEntity {
 
     @Size(max = 125, message = "Side must be less than 125 characters")
     String side;
+
+    public TradeEntity(String account, String type, Double buyQuantity) {
+        this.account = account;
+        this.type = type;
+        this.buyQuantity = buyQuantity;
+    }
+
+    public TradeEntity(Integer id, String account, String type, Double buyQuantity) {
+        this.id = id;
+        this.account = account;
+        this.type = type;
+        this.buyQuantity = buyQuantity;
+    }
 }

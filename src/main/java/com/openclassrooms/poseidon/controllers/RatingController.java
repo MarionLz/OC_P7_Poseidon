@@ -67,7 +67,7 @@ public class RatingController {
     }
 
     @PostMapping("/rating/update/{id}")
-    public String updateRating(@PathVariable("id") Integer id, @Valid RatingEntity rating,
+    public String updateRating(@PathVariable("id") Integer id, @Valid @ModelAttribute("rating") RatingEntity rating,
                              BindingResult result, Model model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {

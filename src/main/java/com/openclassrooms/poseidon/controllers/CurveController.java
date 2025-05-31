@@ -69,7 +69,7 @@ public class CurveController {
     }
 
     @PostMapping("/curvePoint/update/{id}")
-    public String updateCurvePoint(@PathVariable("id") Integer id, @Valid CurvePointEntity curvePoint,
+    public String updateCurvePoint(@PathVariable("id") Integer id, @Valid @ModelAttribute("curvePoint") CurvePointEntity curvePoint,
                              BindingResult result, Model model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
