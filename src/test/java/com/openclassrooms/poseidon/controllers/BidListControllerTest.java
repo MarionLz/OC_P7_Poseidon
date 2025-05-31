@@ -2,9 +2,12 @@ package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.BidListEntity;
 import com.openclassrooms.poseidon.repositories.BidListRepository;
+import com.openclassrooms.poseidon.services.BidListService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -15,10 +18,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith(MockitoExtension.class)
 class BidListControllerTest {
 
     @Mock
-    private BidListRepository bidListRepository;
+    private BidListService bidListService;
 
     @InjectMocks
     private BidListController bidListController;
@@ -27,23 +31,26 @@ class BidListControllerTest {
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(bidListController).build();
+    }
+
+    private BidListEntity sampleBid() {
+        return new BidListEntity(1, "Account Test", "Type Test", 10.0);
     }
 
     @Test
     void testHome() throws Exception {
 
-        List<BidListEntity> bidLists = Arrays.asList(new BidListEntity(), new BidListEntity());
-        when(bidListRepository.findAll()).thenReturn(bidLists);
+        List<BidListEntity> bids = List.of(sampleBid());
+
+        when(bidListService.findAllBids()).thenReturn(bids);
 
         mockMvc.perform(get("/bidList/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("bidList/list"))
-                .andExpect(model().attributeExists("bidLists"))
-                .andExpect(model().attributeExists("httpServletRequest"));
+                .andExpect(model().attributeExists("bidLists"));
 
-        verify(bidListRepository, times(1)).findAll();
+        verify(bidListService, times(1)).findAllBids();
     }
 
     @Test
@@ -59,32 +66,33 @@ class BidListControllerTest {
     void testValidateSuccess() throws Exception {
 
         mockMvc.perform(post("/bidList/validate")
-                        .param("account", "Account1")
-                        .param("type", "Type1")
-                        .param("bidQuantity", "10"))
+                        .param("account", "Account Test")
+                        .param("type", "Type Test")
+                        .param("bidQuantity", "10.0"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/bidList/list"))
-                .andExpect(flash().attributeExists("successMessage"));
+                .andExpect(redirectedUrl("/bidList/list"));
 
-        verify(bidListRepository, times(1)).save(any(BidListEntity.class));
+        verify(bidListService, times(1)).saveBid(any(BidListEntity.class));
     }
 
     @Test
     void testValidateErrors() throws Exception {
 
-        mockMvc.perform(post("/bidList/validate"))
+        mockMvc.perform(post("/bidList/validate")
+                        .param("account", "")  // invalid, empty account
+                        .param("type", "Type Test")
+                        .param("bidQuantity", "10.0"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("bidList/add"));
 
-        verify(bidListRepository, never()).save(any());
+        verify(bidListService, never()).saveBid(any());
     }
 
     @Test
-    void testShowUpdateForm() throws Exception {
+    void testShowUpdateForm_ValidId() throws Exception {
 
-        BidListEntity bid = new BidListEntity();
-        bid.setId(1);
-        when(bidListRepository.findById(1)).thenReturn(Optional.of(bid));
+        when(bidListService.checkIfBidExists(1)).thenReturn(true);
+        when(bidListService.findBidById(1)).thenReturn(sampleBid());
 
         mockMvc.perform(get("/bidList/update/1"))
                 .andExpect(status().isOk())
@@ -93,60 +101,66 @@ class BidListControllerTest {
     }
 
     @Test
-    void testShowUpdateFormInvalidId() throws Exception {
+    void testShowUpdateForm_InvalidId() throws Exception {
 
-        when(bidListRepository.findById(999)).thenReturn(Optional.empty());
+        when(bidListService.checkIfBidExists(999)).thenReturn(false);
 
         mockMvc.perform(get("/bidList/update/999"))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testUpdateBidSuccess() throws Exception {
-
-        mockMvc.perform(post("/bidList/update/1")
-                        .param("account", "UpdatedAccount")
-                        .param("type", "UpdatedType")
-                        .param("bidQuantity", "20"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/bidList/list"))
-                .andExpect(flash().attributeExists("successMessage"));
-
-        verify(bidListRepository, times(1)).save(any(BidListEntity.class));
+                .andExpect(flash().attribute("errorMessage", "Bid not found"));
     }
 
     @Test
-    void testUpdateBidErrors() throws Exception {
+    void testUpdateBid_Success() throws Exception {
 
-        // Pas de paramètres = erreurs de validation
-        mockMvc.perform(post("/bidList/update/1"))
+        mockMvc.perform(post("/bidList/update/1")
+                        .param("id", "1")
+                        .param("account", "Account Updated")
+                        .param("type", "Type Updated")
+                        .param("bidQuantity", "20.0"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/bidList/list"));
+
+        verify(bidListService, times(1)).saveBid(any(BidListEntity.class));
+    }
+
+    @Test
+    void testUpdateBid_Errors() throws Exception {
+
+        mockMvc.perform(post("/bidList/update/1")
+                        .param("account", "")  // invalid
+                        .param("type", "Type Updated")
+                        .param("bidQuantity", "20.0"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("bidList/update"));
 
-        verify(bidListRepository, never()).save(any());
+        verify(bidListService, never()).saveBid(any());
     }
 
     @Test
-    void testDeleteBid() throws Exception {
+    void testDeleteBid_ValidId() throws Exception {
 
-        BidListEntity bid = new BidListEntity();
-        bid.setId(1);
-        when(bidListRepository.findById(1)).thenReturn(Optional.of(bid));
+        when(bidListService.checkIfBidExists(1)).thenReturn(true);
 
         mockMvc.perform(get("/bidList/delete/1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/bidList/list"))
-                .andExpect(flash().attributeExists("successMessage"));
+                .andExpect(flash().attribute("successMessage", "Bid deleted successfully"));
 
-        verify(bidListRepository, times(1)).delete(bid);
+        verify(bidListService, times(1)).deleteBid(1);
     }
 
     @Test
-    void testDeleteBidInvalidId() throws Exception {
+    void testDeleteBid_InvalidId() throws Exception {
 
-        when(bidListRepository.findById(999)).thenReturn(Optional.empty());
+        when(bidListService.checkIfBidExists(999)).thenReturn(false);
 
         mockMvc.perform(get("/bidList/delete/999"))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/bidList/list"))
+                .andExpect(flash().attribute("errorMessage", "Bid not found"));
+
+        verify(bidListService, never()).deleteBid(any());
     }
 }

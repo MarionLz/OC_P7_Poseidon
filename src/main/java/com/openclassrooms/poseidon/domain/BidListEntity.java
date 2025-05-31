@@ -75,7 +75,9 @@ public class BidListEntity {
     @Size(max = 125, message = "Side must be less than 125 characters")
     private String side;
 
-    public BidListEntity(String account, String type, Double bidQuantity) {
+    public BidListEntity(Integer id, String account, String type, Double bidQuantity) {
+
+        this.id = id;
         this.account = account;
         this.type = type;
         this.bidQuantity = bidQuantity;
