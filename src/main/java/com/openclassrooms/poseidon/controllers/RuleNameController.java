@@ -1,7 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.RuleNameEntity;
-import com.openclassrooms.poseidon.repositories.RuleNameRepository;
+import com.openclassrooms.poseidon.services.RuleNameService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +19,12 @@ public class RuleNameController {
     private static final Logger logger = LogManager.getLogger("RuleNameController");
 
     @Autowired
-    private RuleNameRepository ruleNameRepository;
+    private RuleNameService ruleNameService;
 
     @RequestMapping("/ruleName/list")
     public String home(Model model, HttpServletRequest request) {
 
-        model.addAttribute("ruleNames", ruleNameRepository.findAll());
+        model.addAttribute("ruleNames", ruleNameService.findAllRuleNames());
         model.addAttribute("httpServletRequest", request);
         logger.info("GET /ruleName/list - OK");
         return "ruleName/list";
@@ -43,8 +43,8 @@ public class RuleNameController {
                            RedirectAttributes ra) {
 
         if (!result.hasErrors()) {
-            ruleNameRepository.save(ruleName);
-            model.addAttribute("ruleNames", ruleNameRepository.findAll());
+            ruleNameService.saveRuleName(ruleName);
+            model.addAttribute("ruleNames", ruleNameService.findAllRuleNames());
             ra.addFlashAttribute("successMessage", "Rule name created successfully");
             logger.info("POST /ruleName/validate - OK");
             return "redirect:/ruleName/list";
@@ -54,10 +54,14 @@ public class RuleNameController {
     }
 
     @GetMapping("/ruleName/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+    public String showUpdateForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        RuleNameEntity ruleName = ruleNameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ruleName Id:" + id));
-        model.addAttribute("ruleName", ruleName);
+        if (!ruleNameService.checkIfRuleNameExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Rule name not found");
+            logger.warn("GET /ruleName/update/{} - KO : Rule name not found", id);
+            return "redirect:/ruleName/list";
+        }
+        model.addAttribute("ruleName", ruleNameService.findRuleNameById(id));
         logger.info("GET /ruleName/update/{} - OK", id);
         return "ruleName/update";
     }
@@ -70,8 +74,8 @@ public class RuleNameController {
             logger.warn("POST /ruleName/update/{} - KO : validation errors found", id);
             return "ruleName/update";
         }
-        ruleNameRepository.save(ruleName);
-        model.addAttribute("ruleNames", ruleNameRepository.findAll());
+        ruleNameService.saveRuleName(ruleName);
+        model.addAttribute("ruleNames", ruleNameService.findAllRuleNames());
         ra.addFlashAttribute("successMessage", "Rule name updated successfully");
         logger.info("POST /ruleName/update/{} - OK", id);
         return "redirect:/ruleName/list";
@@ -80,9 +84,13 @@ public class RuleNameController {
     @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        RuleNameEntity ruleName = ruleNameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ruleName Id:" + id));
-        ruleNameRepository.delete(ruleName);
-        model.addAttribute("ruleNames", ruleNameRepository.findAll());
+        if (!ruleNameService.checkIfRuleNameExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Rule name not found");
+            logger.warn("GET /ruleName/delete/{} - KO : Rule name not found", id);
+            return "redirect:/ruleName/list";
+        }
+        ruleNameService.deleteBid(id);
+        model.addAttribute("ruleNames", ruleNameService.findAllRuleNames());
         ra.addFlashAttribute("successMessage", "Rule name deleted successfully");
         logger.info("GET /ruleName/delete/{} - OK", id);
         return "redirect:/ruleName/list";
