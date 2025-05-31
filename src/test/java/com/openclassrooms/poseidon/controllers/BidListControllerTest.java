@@ -63,7 +63,7 @@ class BidListControllerTest {
     }
 
     @Test
-    void testValidateSuccess() throws Exception {
+    void testValidate_Success() throws Exception {
 
         mockMvc.perform(post("/bidList/validate")
                         .param("account", "Account Test")
@@ -76,7 +76,7 @@ class BidListControllerTest {
     }
 
     @Test
-    void testValidateErrors() throws Exception {
+    void testValidate_Errors() throws Exception {
 
         mockMvc.perform(post("/bidList/validate")
                         .param("account", "")  // invalid, empty account
