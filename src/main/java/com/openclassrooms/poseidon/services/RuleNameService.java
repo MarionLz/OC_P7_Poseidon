@@ -29,7 +29,7 @@ public class RuleNameService {
         return ruleNameRepository.findById(id).orElse(null);
     }
 
-    public void deleteBid(Integer id) {
+    public void deleteRuleName(Integer id) {
         ruleNameRepository.deleteById(id);
     }
 }

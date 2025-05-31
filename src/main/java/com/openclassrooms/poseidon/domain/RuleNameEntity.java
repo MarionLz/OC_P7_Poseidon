@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "rulename")
 public class RuleNameEntity {
 
@@ -39,4 +41,25 @@ public class RuleNameEntity {
     @Size(max = 125, message = "SqlPart must be less than 125 characters")
     @Column(name = "sqlPart")
     String sqlPart;
+
+    public RuleNameEntity(String name, String description, String json, String template, String sqlStr, String sqlPart) {
+
+        this.name = name;
+        this.description = description;
+        this.json = json;
+        this.template = template;
+        this.sqlStr = sqlStr;
+        this.sqlPart = sqlPart;
+    }
+
+    public RuleNameEntity(Integer id, String name, String description, String json, String template, String sqlStr, String sqlPart) {
+
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.json = json;
+        this.template = template;
+        this.sqlStr = sqlStr;
+        this.sqlPart = sqlPart;
+    }
 }

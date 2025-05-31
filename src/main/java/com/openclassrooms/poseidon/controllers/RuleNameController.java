@@ -89,7 +89,7 @@ public class RuleNameController {
             logger.warn("GET /ruleName/delete/{} - KO : Rule name not found", id);
             return "redirect:/ruleName/list";
         }
-        ruleNameService.deleteBid(id);
+        ruleNameService.deleteRuleName(id);
         model.addAttribute("ruleNames", ruleNameService.findAllRuleNames());
         ra.addFlashAttribute("successMessage", "Rule name deleted successfully");
         logger.info("GET /ruleName/delete/{} - OK", id);
