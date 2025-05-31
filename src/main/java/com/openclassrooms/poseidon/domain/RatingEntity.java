@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "rating")
 public class RatingEntity {
 
@@ -29,4 +31,12 @@ public class RatingEntity {
 
     @NotNull(message = "OrderNumber is mandatory")
     int orderNumber;
+
+    public RatingEntity(String moodysRating, String sandPRating, String fitchRating, int orderNumber) {
+
+        this.moodysRating = moodysRating;
+        this.sandPRating = sandPRating;
+        this.fitchRating = fitchRating;
+        this.orderNumber = orderNumber;
+    }
 }
