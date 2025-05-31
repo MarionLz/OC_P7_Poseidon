@@ -1,7 +1,6 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.BidListEntity;
-import com.openclassrooms.poseidon.repositories.BidListRepository;
 import com.openclassrooms.poseidon.services.BidListService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
