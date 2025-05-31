@@ -3,10 +3,13 @@ package com.openclassrooms.poseidon.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "bidlist")
 public class BidListEntity {
 
@@ -71,4 +74,10 @@ public class BidListEntity {
 
     @Size(max = 125, message = "Side must be less than 125 characters")
     private String side;
+
+    public BidListEntity(String account, String type, Double bidQuantity) {
+        this.account = account;
+        this.type = type;
+        this.bidQuantity = bidQuantity;
+    }
 }
