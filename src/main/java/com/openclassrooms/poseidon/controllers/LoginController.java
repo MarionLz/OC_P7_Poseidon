@@ -15,8 +15,8 @@ public class LoginController {
 
     private static final Logger logger = LogManager.getLogger("LoginController");
 
-    @Autowired
-    private UserRepository userRepository;
+//    @Autowired
+//    private UserRepository userRepository;
 
     @GetMapping("login")
     public ModelAndView login() {
@@ -27,15 +27,15 @@ public class LoginController {
         return mav;
     }
 
-    @GetMapping("secure/article-details")
-    public ModelAndView getAllUserArticles() {
-
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("users", userRepository.findAll());
-        mav.setViewName("user/list");
-        logger.info("GET /app/secure/article-details - OK");
-        return mav;
-    }
+//    @GetMapping("secure/article-details")
+//    public ModelAndView getAllUserArticles() {
+//
+//        ModelAndView mav = new ModelAndView();
+//        mav.addObject("users", userRepository.findAll());
+//        mav.setViewName("user/list");
+//        logger.info("GET /app/secure/article-details - OK");
+//        return mav;
+//    }
 
     @GetMapping("error")
     public ModelAndView error() {
