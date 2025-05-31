@@ -40,7 +40,7 @@ public class LoginControllerTest {
     public void testErrorPage() throws Exception {
         mockMvc.perform(get("/app/error"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("403"))
+                .andExpect(view().name("error/403"))
                 .andExpect(model().attribute("errorMsg", "You are not authorized for the requested data."));
     }
 }
