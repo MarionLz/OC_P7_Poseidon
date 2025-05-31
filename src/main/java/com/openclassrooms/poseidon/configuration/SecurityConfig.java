@@ -19,23 +19,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/", "/app/login", "/user/list", "/user/add", "/user/validate", "/user/update/**", "/user/delete/**").permitAll()
-                        //.requestMatchers("/user/update/**", "/user/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/css/**", "/", "/app/login").permitAll()
+                        .requestMatchers("/user/*").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/app/login")
                         .usernameParameter("username")
-                        .defaultSuccessUrl("/ruleName/list", true)
+                        .defaultSuccessUrl("/bidList/list", true)
                         .failureUrl("/app/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/home")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutUrl("/app-logout")
+                        .logoutSuccessUrl("/")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/app/error")
                 );
 
         return http.build();
     }
 }
-
