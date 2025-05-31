@@ -21,7 +21,10 @@ public class BidTests {
 	@Test
 	public void bidListTest() {
 
-		BidListEntity bid = new BidListEntity("Account Test", "Type Test", 10d);
+		BidListEntity bid = new BidListEntity();
+		bid.setAccount("Account Test");
+		bid.setType("Type Test");
+		bid.setBidQuantity(10d);
 
 		// Save
 		bid = bidListRepository.save(bid);
