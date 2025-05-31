@@ -1,7 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.UserEntity;
-import com.openclassrooms.poseidon.repositories.UserRepository;
+import com.openclassrooms.poseidon.services.UserService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +19,12 @@ public class UserController {
     private static final Logger logger = LogManager.getLogger("UserController");
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @RequestMapping("/user/list")
     public String home(Model model) {
 
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("users", userService.findAllUsers());
         logger.info("GET /user/list - OK");
         return "user/list";
     }
@@ -44,27 +44,31 @@ public class UserController {
         if (!result.hasErrors()) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(user.getPassword()));
-            userRepository.save(user);
-            model.addAttribute("users", userRepository.findAll());
+            userService.saveUser(user);
+            model.addAttribute("users", userService.findAllUsers());
             ra.addFlashAttribute("successMessage", "User created successfully");
             logger.info("POST /user/validate - OK");
             return "redirect:/user/list";
         }
+        logger.warn("POST /user/validate - KO : validation errors found");
         return "user/add";
     }
 
     @GetMapping("/user/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+    public String showUpdateForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        user.setPassword("");
-        model.addAttribute("user", user);
+        if (!userService.checkIfUserExists(id)) {
+            ra.addFlashAttribute("errorMessage", "User not found");
+            logger.warn("GET /user/update/{} - KO : User not found", id);
+            return "redirect:/user/list";
+        }
+        model.addAttribute("user", userService.findUserById(id));
         logger.info("GET /user/update/{} - OK", id);
         return "user/update";
     }
 
     @PostMapping("/user/update/{id}")
-    public String updateUser(@PathVariable("id") Integer id, @Valid UserEntity user,
+    public String updateUser(@PathVariable("id") Integer id, @Valid @ModelAttribute("user") UserEntity user,
                              BindingResult result, Model model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
@@ -74,8 +78,8 @@ public class UserController {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(id);
-        userRepository.save(user);
-        model.addAttribute("users", userRepository.findAll());
+        userService.saveUser(user);
+        model.addAttribute("users", userService.findAllUsers());
         ra.addFlashAttribute("successMessage", "User updated successfully");
         logger.info("POST /user/update/{} - OK", id);
         return "redirect:/user/list";
@@ -84,10 +88,13 @@ public class UserController {
     @GetMapping("/user/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        userRepository.delete(user);
-        logger.info("User deleted successfully: {}", user.getUsername());
-        model.addAttribute("users", userRepository.findAll());
+        if (!userService.checkIfUserExists(id)) {
+            ra.addFlashAttribute("errorMessage", "User not found");
+            logger.warn("GET /user/delete/{} - KO : User not found", id);
+            return "redirect:/user/list";
+        }
+        userService.deleteUser(id);
+        model.addAttribute("users", userService.findAllUsers());
         ra.addFlashAttribute("successMessage", "User deleted successfully");
         logger.info("GET /user/delete/{} - OK", id);
         return "redirect:/user/list";
