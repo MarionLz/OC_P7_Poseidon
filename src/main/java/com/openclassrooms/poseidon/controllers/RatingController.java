@@ -1,7 +1,7 @@
 package com.openclassrooms.poseidon.controllers;
 
 import com.openclassrooms.poseidon.domain.RatingEntity;
-import com.openclassrooms.poseidon.repositories.RatingRepository;
+import com.openclassrooms.poseidon.services.RatingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +19,12 @@ public class RatingController {
     private static final Logger logger = LogManager.getLogger("RatingController");
 
     @Autowired
-    private RatingRepository ratingRepository;
+    private RatingService ratingService;
 
     @RequestMapping("/rating/list")
     public String home(Model model, HttpServletRequest request) {
 
-        model.addAttribute("ratings", ratingRepository.findAll());
+        model.addAttribute("ratings", ratingService.findAllRatings());
         model.addAttribute("httpServletRequest", request);
         logger.info("GET /rating/list - OK");
         return "rating/list";
@@ -43,8 +43,8 @@ public class RatingController {
                            RedirectAttributes ra) {
 
         if (!result.hasErrors()) {
-            ratingRepository.save(rating);
-            model.addAttribute("ratings", ratingRepository.findAll());
+            ratingService.saveRating(rating);
+            model.addAttribute("ratings", ratingService.findAllRatings());
             ra.addFlashAttribute("successMessage", "Rating created successfully");
             logger.info("POST /rating/validate - OK");
             return "redirect:/rating/list";
@@ -54,10 +54,14 @@ public class RatingController {
     }
 
     @GetMapping("/rating/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+    public String showUpdateForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        RatingEntity rating = ratingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid rating Id:" + id));
-        model.addAttribute("rating", rating);
+        if (!ratingService.checkIfRatingExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Rating not found");
+            logger.warn("GET /rating/update/{} - KO : Rating not found", id);
+            return "redirect:/rating/list";
+        }
+        model.addAttribute("rating", ratingService.findRatingById(id));
         logger.info("GET /rating/update/{} - OK", id);
         return "rating/update";
     }
@@ -70,8 +74,8 @@ public class RatingController {
             logger.warn("POST /rating/update/{} - KO : validation errors found", id);        model.addAttribute("errorMessage", "Validation errors found");
             return "rating/update";
         }
-        ratingRepository.save(rating);
-        model.addAttribute("ratings", ratingRepository.findAll());
+        ratingService.saveRating(rating);
+        model.addAttribute("ratings", ratingService.findAllRatings());
         ra.addFlashAttribute("successMessage", "Rating updated successfully");
         logger.info("POST /rating/update/{} - OK", id);
         return "redirect:/rating/list";
@@ -80,9 +84,13 @@ public class RatingController {
     @GetMapping("/rating/delete/{id}")
     public String deleteRating(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
-        RatingEntity rating = ratingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid rating Id:" + id));
-        ratingRepository.delete(rating);
-        model.addAttribute("ratings", ratingRepository.findAll());
+        if (!ratingService.checkIfRatingExists(id)) {
+            ra.addFlashAttribute("errorMessage", "Rating not found");
+            logger.warn("GET /rating/delete/{} - KO : Rating not found", id);
+            return "redirect:/rating/list";
+        }
+        ratingService.deleteRating(id);
+        model.addAttribute("ratings", ratingService.findAllRatings());
         ra.addFlashAttribute("successMessage", "Rating deleted successfully");
         logger.info("GET /rating/delete/{} - OK", id);
         return "redirect:/rating/list";
