@@ -7,14 +7,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Configuration class for Spring Security.
+ * Defines security settings such as password encoding and HTTP security rules.
+ */
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Bean definition for the password encoder.
+     * Uses BCryptPasswordEncoder to encode passwords securely.
+     *
+     * @return a PasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean definition for the security filter chain.
+     * Configures HTTP security rules, including authorization, login, and logout settings.
+     *
+     * @param http the HttpSecurity object to configure
+     * @return a SecurityFilterChain instance
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

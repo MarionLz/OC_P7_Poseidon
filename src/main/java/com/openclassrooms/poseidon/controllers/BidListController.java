@@ -13,6 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Controller class for managing BidList operations.
+ * Handles HTTP requests related to BidList entities, such as listing, adding, updating, and deleting bids.
+ */
 @Controller
 public class BidListController {
 
@@ -21,6 +25,13 @@ public class BidListController {
     @Autowired
     private BidListService bidListService;
 
+    /**
+     * Handles the request to display the list of bids.
+     *
+     * @param model the Model object to pass data to the view
+     * @param request the HttpServletRequest object
+     * @return the name of the view to display the list of bids
+     */
     @RequestMapping("/bidList/list")
     public String home(Model model, HttpServletRequest request)
     {
@@ -30,6 +41,12 @@ public class BidListController {
         return "bidList/list";
     }
 
+    /**
+     * Handles the request to display the form for adding a new bid.
+     *
+     * @param model the Model object to pass data to the view
+     * @return the name of the view to display the add bid form
+     */
     @GetMapping("/bidList/add")
     public String addBidForm(Model model) {
 
@@ -38,6 +55,16 @@ public class BidListController {
         return "bidList/add";
     }
 
+    /**
+     * Handles the submission of the add bid form.
+     * Validates the bid and saves it if there are no validation errors.
+     *
+     * @param bid the BidListEntity object to validate and save
+     * @param result the BindingResult object to check for validation errors
+     * @param model the Model object to pass data to the view
+     * @param ra the RedirectAttributes object to pass flash attributes
+     * @return the name of the view to redirect to or display
+     */
     @PostMapping("/bidList/validate")
     public String validate(@Valid @ModelAttribute("bidList") BidListEntity bid, BindingResult result, Model model,
                            RedirectAttributes ra) {
@@ -53,6 +80,14 @@ public class BidListController {
         return "bidList/add";
     }
 
+    /**
+     * Handles the request to display the form for updating an existing bid.
+     *
+     * @param id the ID of the bid to update
+     * @param model the Model object to pass data to the view
+     * @param ra the RedirectAttributes object to pass flash attributes
+     * @return the name of the view to display the update bid form or redirect to the list view
+     */
     @GetMapping("/bidList/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
@@ -66,6 +101,17 @@ public class BidListController {
         return "bidList/update";
     }
 
+    /**
+     * Handles the submission of the update bid form.
+     * Validates the bid and updates it if there are no validation errors.
+     *
+     * @param id the ID of the bid to update
+     * @param bid the BidListEntity object to validate and update
+     * @param result the BindingResult object to check for validation errors
+     * @param model the Model object to pass data to the view
+     * @param ra the RedirectAttributes object to pass flash attributes
+     * @return the name of the view to redirect to or display
+     */
     @PostMapping("/bidList/update/{id}")
     public String updateBid(@PathVariable("id") Integer id, @Valid @ModelAttribute("bidList") BidListEntity bid,
                              BindingResult result, Model model, RedirectAttributes ra) {
@@ -81,6 +127,14 @@ public class BidListController {
         return "redirect:/bidList/list";
     }
 
+    /**
+     * Handles the request to delete an existing bid.
+     *
+     * @param id the ID of the bid to delete
+     * @param model the Model object to pass data to the view
+     * @param ra the RedirectAttributes object to pass flash attributes
+     * @return the name of the view to redirect to
+     */
     @GetMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
 
