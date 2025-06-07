@@ -6,6 +6,11 @@
 </head>
 <body>
 <h3>Login with Username and Password</h3>
+
+<div th:if="${loginError}" class="error" style="color: red; margin-bottom: 10px;">
+    <p th:text="${loginError}"></p>
+</div>
+
 <form th:action="@{/app/login}" method="post">
     <table>
         <tr>
