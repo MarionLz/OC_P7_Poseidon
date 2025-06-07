@@ -6,6 +6,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Configuration class for Spring Security.
@@ -13,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private CustomSuccessHandler successHandler;
 
     /**
      * Bean definition for the password encoder.
@@ -44,7 +48,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/app/login")
                         .usernameParameter("username")
-                        .defaultSuccessUrl("/bidList/list", true)
+                        .successHandler(successHandler)
                         .failureUrl("/app/login?error")
                         .permitAll()
                 )
