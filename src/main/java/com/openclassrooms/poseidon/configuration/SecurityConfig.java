@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .loginPage("/app/login")
                         .usernameParameter("username")
                         .successHandler(successHandler)
-                        .failureUrl("/app/login?error")
+                        .failureUrl("/app/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout

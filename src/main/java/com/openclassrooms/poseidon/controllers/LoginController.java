@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +29,11 @@ public class LoginController {
      * @return a ModelAndView object for the login page or redirection
      */
     @GetMapping("login")
-    public ModelAndView login() {
+    public ModelAndView login(@RequestParam(value = "error", required = false) String error, Model model) {
+
+        if (error != null) {
+            model.addAttribute("loginError", "Invalid username or password.");
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
