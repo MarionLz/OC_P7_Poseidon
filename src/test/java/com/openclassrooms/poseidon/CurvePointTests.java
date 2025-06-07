@@ -1,18 +1,16 @@
 package com.openclassrooms.poseidon;
 
-import com.nnk.springboot.domain.CurvePoint;
-import com.nnk.springboot.repositories.CurvePointRepository;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.openclassrooms.poseidon.domain.CurvePointEntity;
+import com.openclassrooms.poseidon.repositories.CurvePointRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 public class CurvePointTests {
 
@@ -21,27 +19,30 @@ public class CurvePointTests {
 
 	@Test
 	public void curvePointTest() {
-		CurvePoint curvePoint = new CurvePoint(10, 10d, 30d);
+
+		CurvePointEntity curvePoint = new CurvePointEntity();
+		curvePoint.setCurveId(10);
+		curvePoint.setTerm(10d);
+		curvePoint.setValue(30d);
 
 		// Save
 		curvePoint = curvePointRepository.save(curvePoint);
-		Assert.assertNotNull(curvePoint.getId());
-		Assert.assertTrue(curvePoint.getCurveId() == 10);
+		assertNotNull(curvePoint.getId());
+        assertEquals(10, (int) curvePoint.getCurveId());
 
 		// Update
 		curvePoint.setCurveId(20);
 		curvePoint = curvePointRepository.save(curvePoint);
-		Assert.assertTrue(curvePoint.getCurveId() == 20);
+        assertEquals(20, (int) curvePoint.getCurveId());
 
 		// Find
-		List<CurvePoint> listResult = curvePointRepository.findAll();
-		Assert.assertTrue(listResult.size() > 0);
+		List<CurvePointEntity> listResult = curvePointRepository.findAll();
+        assertFalse(listResult.isEmpty());
 
 		// Delete
 		Integer id = curvePoint.getId();
 		curvePointRepository.delete(curvePoint);
-		Optional<CurvePoint> curvePointList = curvePointRepository.findById(id);
-		Assert.assertFalse(curvePointList.isPresent());
+		Optional<CurvePointEntity> curvePointList = curvePointRepository.findById(id);
+		assertFalse(curvePointList.isPresent());
 	}
-
 }

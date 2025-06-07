@@ -1,18 +1,16 @@
 package com.openclassrooms.poseidon;
 
-import com.nnk.springboot.domain.Rating;
-import com.nnk.springboot.repositories.RatingRepository;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.openclassrooms.poseidon.domain.RatingEntity;
+import com.openclassrooms.poseidon.repositories.RatingRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 public class RatingTests {
 
@@ -21,26 +19,27 @@ public class RatingTests {
 
 	@Test
 	public void ratingTest() {
-		Rating rating = new Rating("Moodys Rating", "Sand PRating", "Fitch Rating", 10);
+
+		RatingEntity rating = new RatingEntity("Moodys Rating", "Sand PRating", "Fitch Rating", 10);
 
 		// Save
 		rating = ratingRepository.save(rating);
-		Assert.assertNotNull(rating.getId());
-		Assert.assertTrue(rating.getOrderNumber() == 10);
+		assertNotNull(rating.getId());
+        assertEquals(10, rating.getOrderNumber());
 
 		// Update
 		rating.setOrderNumber(20);
 		rating = ratingRepository.save(rating);
-		Assert.assertTrue(rating.getOrderNumber() == 20);
+        assertEquals(20, rating.getOrderNumber());
 
 		// Find
-		List<Rating> listResult = ratingRepository.findAll();
-		Assert.assertTrue(listResult.size() > 0);
+		List<RatingEntity> listResult = ratingRepository.findAll();
+        assertFalse(listResult.isEmpty());
 
 		// Delete
 		Integer id = rating.getId();
 		ratingRepository.delete(rating);
-		Optional<Rating> ratingList = ratingRepository.findById(id);
-		Assert.assertFalse(ratingList.isPresent());
+		Optional<RatingEntity> ratingList = ratingRepository.findById(id);
+		assertFalse(ratingList.isPresent());
 	}
 }

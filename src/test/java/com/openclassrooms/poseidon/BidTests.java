@@ -1,18 +1,17 @@
 package com.openclassrooms.poseidon;
 
-import com.nnk.springboot.domain.BidList;
-import com.nnk.springboot.repositories.BidListRepository;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.openclassrooms.poseidon.domain.BidListEntity;
+import com.openclassrooms.poseidon.repositories.BidListRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 public class BidTests {
 
@@ -21,26 +20,30 @@ public class BidTests {
 
 	@Test
 	public void bidListTest() {
-		BidList bid = new BidList("Account Test", "Type Test", 10d);
+
+		BidListEntity bid = new BidListEntity();
+		bid.setAccount("Account Test");
+		bid.setType("Type Test");
+		bid.setBidQuantity(10d);
 
 		// Save
 		bid = bidListRepository.save(bid);
-		Assert.assertNotNull(bid.getBidListId());
-		Assert.assertEquals(bid.getBidQuantity(), 10d, 10d);
+		assertNotNull(bid.getId());
+		assertEquals(bid.getBidQuantity(), 10d, 10d);
 
 		// Update
 		bid.setBidQuantity(20d);
 		bid = bidListRepository.save(bid);
-		Assert.assertEquals(bid.getBidQuantity(), 20d, 20d);
+		assertEquals(bid.getBidQuantity(), 20d, 20d);
 
 		// Find
-		List<BidList> listResult = bidListRepository.findAll();
-		Assert.assertTrue(listResult.size() > 0);
+		List<BidListEntity> listResult = bidListRepository.findAll();
+		assertTrue(listResult.size() > 0);
 
 		// Delete
-		Integer id = bid.getBidListId();
+		Integer id = bid.getId();
 		bidListRepository.delete(bid);
-		Optional<BidList> bidList = bidListRepository.findById(id);
-		Assert.assertFalse(bidList.isPresent());
+		Optional<BidListEntity> bidList = bidListRepository.findById(id);
+		assertFalse(bidList.isPresent());
 	}
 }

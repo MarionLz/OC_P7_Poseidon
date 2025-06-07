@@ -1,24 +1,25 @@
 package com.openclassrooms.poseidon;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
 
-/**
- * Created by Khang Nguyen.
- * Email: khang.nguyen@banvien.com
- * Date: 09/03/2019
- * Time: 11:26 AM
- */
-@RunWith(SpringRunner.class)
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PasswordEncodeTest {
+
     @Test
-    public void testPassword() {
+    public void testPasswordEncodingAndMatching() {
+
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String pw = encoder.encode("123456");
-        System.out.println("[ "+ pw + " ]");
+
+        String rawPassword = "123456";
+        String encodedPassword = encoder.encode(rawPassword);
+
+        assertNotNull(encodedPassword, "Encoded password should not be null");
+        assertFalse(encodedPassword.isEmpty(), "Encoded password should not be empty");
+
+        assertTrue(encoder.matches(rawPassword, encodedPassword), "Password should match the encoded hash");
+
+        System.out.println("Encoded password: " + encodedPassword);
     }
 }
