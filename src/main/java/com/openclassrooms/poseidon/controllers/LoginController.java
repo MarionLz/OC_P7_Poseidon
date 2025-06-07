@@ -20,9 +20,6 @@ public class LoginController {
 
     private static final Logger logger = LogManager.getLogger("LoginController");
 
-//    @Autowired
-//    private UserRepository userRepository;
-
     /**
      * Handles the request to display the login page.
      * Redirects authenticated users to the bid list page.
@@ -44,16 +41,6 @@ public class LoginController {
         logger.info("GET /app/login - OK");
         return mav;
     }
-
-//    @GetMapping("secure/article-details")
-//    public ModelAndView getAllUserArticles() {
-//
-//        ModelAndView mav = new ModelAndView();
-//        mav.addObject("users", userRepository.findAll());
-//        mav.setViewName("user/list");
-//        logger.info("GET /app/secure/article-details - OK");
-//        return mav;
-//    }
 
     /**
      * Handles the request to display the error page for unauthorized access.

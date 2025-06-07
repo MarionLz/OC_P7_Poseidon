@@ -17,7 +17,7 @@ public class CurvePointEntity {
     Integer id;
 
     @NotNull(message = "Curve ID cannot be null")
-    @Positive(message = "Curve point Id must be greater than zero")
+    @PositiveOrZero(message = "Curve point Id must be positive or zero")
     Integer curveId;
 
     Timestamp asOfDate;
